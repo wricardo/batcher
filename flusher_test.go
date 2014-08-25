@@ -61,9 +61,8 @@ func TestShuttingDownFlusherWaitsForAllTheCommandsToBeFinished(t *testing.T) {
 			flusher.Flush(tmp[0])
 			flusher.Flush(tmp[1])
 			flusher.Flush(tmp[2])
-			go flusher.Flush(tmp[3])
-			go flusher.Flush(tmp[4])
-			time.Sleep(time.Millisecond * 10)
+			flusher.Flush(tmp[3])
+			flusher.Flush(tmp[4])
 
 
 			Convey("After calling shutting down all 5 messages should have been flushed", func() {

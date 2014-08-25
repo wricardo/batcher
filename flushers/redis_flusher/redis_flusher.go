@@ -2,7 +2,6 @@ package redis_flusher
 import(
 	"github.com/wricardo/batcher"
 	"github.com/garyburd/redigo/redis"
-//	"time"
 //	"errors"
 )
 
