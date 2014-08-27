@@ -3,9 +3,8 @@ package batcher
 import (
 	"errors"
 	"time"
-//	"fmt"
+	//	"fmt"
 )
-
 
 type Flusher interface {
 	Flush(Flushable) error
@@ -16,8 +15,14 @@ type FlusherImplementation interface {
 	Flush(Flushable) error
 }
 
-type Flushable interface {
-	Strings() []string
+type Flushable []Collectable
+
+func (this Flushable) Strings() []string {
+	tmp := make([]string, len(this))
+	for k, v := range this {
+		tmp[k] = v.String()
+	}
+	return tmp
 }
 
 type DefaultFlusher struct {

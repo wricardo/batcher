@@ -23,7 +23,8 @@ func TestIfFunctionIsCalledWhenFlusherFlushes (t *testing.T) {
 		flusher := batcher.NewDefaultFlusher(3, ff)
 
 		Convey("When Flushing one flushable struct", func() {
-			to_flush := TestStruct{"name1", 1987}
+			to_flush := make(batcher.Flushable, 1)
+			to_flush[0] = TestStruct{"name1", 1987}
 			err := flusher.Flush(to_flush)
 
 			Convey("No error should have occurred", func() {
@@ -37,7 +38,7 @@ func TestIfFunctionIsCalledWhenFlusherFlushes (t *testing.T) {
 		})
 
 		Convey("When flushing a flushable slice of structs", func() {
-			to_flush := make(TestStructs, 2)
+			to_flush := make(batcher.Flushable, 2)
 			to_flush[0] = TestStruct{"name1", 1987}
 			to_flush[1] = TestStruct{"name2", 1990}
 
@@ -61,8 +62,8 @@ type TestStructs []TestStruct
 func (this TestStructs) Strings() []string {
 	tmp := make([]string, 0)
 	for _, v := range this {
-		tmp2 := v.Strings()
-		tmp = append(tmp, tmp2[0])
+		tmp2 := v.String()
+		tmp = append(tmp, tmp2)
 	}
 	return tmp
 }
@@ -72,9 +73,7 @@ type TestStruct struct {
 	Field2 int
 }
 
-func (this TestStruct) Strings() []string {
-	strings := make([]string, 1)
+func (this TestStruct) String() string {
 	encoded, _ := json.Marshal(this)
-	strings[0] = string(encoded)
-	return strings
+	return string(encoded)
 }

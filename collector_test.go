@@ -277,4 +277,3 @@ func TestBufferCollectorCreation(t *testing.T) {
 		}
 	})
 }
-

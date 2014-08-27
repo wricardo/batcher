@@ -68,7 +68,7 @@ func (this *bufferedCollector) Shutdown() {
 
 func (this *bufferedCollector) Flush() {
 	if this.i > 0 {
-		to_flush := make(CollectedMessages, this.i)
+		to_flush := make(Flushable, this.i)
 		copy(to_flush, this.buffer[:this.i])
 		this.i = 0
 		this.Flusher.Flush(to_flush)

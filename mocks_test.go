@@ -7,9 +7,9 @@ import (
 	"time"
 )
 
-type MockFlusherImplementation struct{
+type MockFlusherImplementation struct {
 	flushed chan Flushable
-	delay time.Duration
+	delay   time.Duration
 }
 
 func NewMockFlusherImplementation() *MockFlusherImplementation {
@@ -65,7 +65,6 @@ func ShouldReceiveIn(c chan interface{}, r interface{}, d time.Duration) {
 	}
 }
 
-
 func ShouldReceiveSliceIn(c chan []interface{}, r []interface{}, d time.Duration) {
 	select {
 	case a := <-c:
@@ -91,7 +90,6 @@ func ShouldReceiveFlushableStringsIn(c chan Flushable, r []string, d time.Durati
 		So(false, ShouldBeTrue)
 	}
 }
-
 
 func ShouldReceiveFlushableIn(c chan Flushable, r Flushable, d time.Duration) {
 	select {
