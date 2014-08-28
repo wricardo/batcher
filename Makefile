@@ -1,5 +1,5 @@
 test: deps
-	go test -timeout 5s -covermode=count -coverprofile=coverage.out ./...
+	./test.sh
 	
 deps:
 	go get github.com/smartystreets/goconvey/convey

@@ -1,8 +1,9 @@
 package redis_flusher
-import(
-	"github.com/wricardo/batcher"
+
+import (
 	"github.com/garyburd/redigo/redis"
-//	"errors"
+	"github.com/wricardo/batcher"
+	//	"errors"
 )
 
 type RedisFlusherImplementation interface {

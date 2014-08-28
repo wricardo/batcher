@@ -2,9 +2,10 @@ package batcher
 
 import (
 	"encoding/json"
+	"time"
+
 	"github.com/garyburd/redigo/redis"
 	. "github.com/smartystreets/goconvey/convey"
-	"time"
 )
 
 type MockFlusherImplementation struct {

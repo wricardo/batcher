@@ -2,9 +2,9 @@ package batcher
 
 import (
 	"fmt"
-	. "github.com/smartystreets/goconvey/convey"
 	"testing"
 	"time"
+	. "github.com/smartystreets/goconvey/convey"
 	//    "strconv"
 	//    "fmt"
 	"encoding/json"
@@ -36,7 +36,7 @@ func (this TestStruct) String() string {
 }
 
 func TestShuttingDownFlusherWaitsForAllTheCommandsToBeFinished(t *testing.T) {
-	Convey("Given a flusher with buffer 3", t, func() {
+	SkipConvey("Given a flusher with buffer 3", t, func() {
 		mfi := NewMockFlusherImplementation()
 		mfi.delay = time.Second * 1
 		flusher := NewDefaultFlusher(3, mfi)

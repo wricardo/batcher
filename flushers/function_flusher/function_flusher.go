@@ -1,5 +1,6 @@
 package function_flusher
-import(
+
+import (
 	"github.com/wricardo/batcher"
 )
 
@@ -9,7 +10,7 @@ type FunctionFlusher struct {
 	f FlushFunction
 }
 
-func NewFunctionFlusher(flush_buffer_size int, f FlushFunction) batcher.Flusher{
+func NewFunctionFlusher(flush_buffer_size int, f FlushFunction) batcher.Flusher {
 	ff := FunctionFlusher{
 		f: f,
 	}

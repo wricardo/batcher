@@ -2,10 +2,10 @@ package batcher
 
 import (
 	"fmt"
-	. "github.com/smartystreets/goconvey/convey"
 	"strconv"
 	"testing"
 	"time"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestUnsafeSizeBufferedCollector(t *testing.T) {

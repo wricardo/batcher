@@ -1,9 +1,10 @@
 package redis_flusher
-import(
-	"github.com/wricardo/batcher"
+
+import (
 	"github.com/garyburd/redigo/redis"
-//	"time"
-//	"errors"
+	"github.com/wricardo/batcher"
+	//	"time"
+	//	"errors"
 )
 
 type RedisListFlusher struct {
@@ -23,7 +24,7 @@ func (this RedisListFlusher) Flush(conn redis.Conn, f batcher.Flushable) {
 	}
 }
 
-func NewListFlusher(list_name string, flush_buffer_size int, pool RedisPool) batcher.Flusher{
+func NewListFlusher(list_name string, flush_buffer_size int, pool RedisPool) batcher.Flusher {
 	rlf := RedisListFlusher{List: list_name}
 	rf := NewRedisFlusher(pool, rlf)
 	return batcher.NewDefaultFlusher(flush_buffer_size, rf)

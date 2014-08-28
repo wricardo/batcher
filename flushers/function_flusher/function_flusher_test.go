@@ -1,20 +1,21 @@
 package function_flusher
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
-	"testing"
-	"fmt"
-	"github.com/wricardo/batcher"
 	"encoding/json"
+	"fmt"
+	"testing"
+	. "github.com/smartystreets/goconvey/convey"
+	"github.com/wricardo/batcher"
 )
-func init(){
+
+func init() {
 	fmt.Sprint("")
 }
 
-func TestIfFunctionIsCalledWhenFlusherFlushes (t *testing.T) {
+func TestIfFunctionIsCalledWhenFlusherFlushes(t *testing.T) {
 	Convey("Given a function flusher", t, func() {
-		flushed := make(chan []string,0)
-		f := func(to_flush batcher.Flushable) error{
+		flushed := make(chan []string, 0)
+		f := func(to_flush batcher.Flushable) error {
 			flushed <- to_flush.Strings()
 			return nil
 		}
@@ -31,7 +32,7 @@ func TestIfFunctionIsCalledWhenFlusherFlushes (t *testing.T) {
 				So(err, ShouldBeNil)
 			})
 			Convey("Flusher should call Flush on FunctionFlusher", func() {
-				expected := make([]string,1)
+				expected := make([]string, 1)
 				expected[0] = "{\"Field1\":\"name1\",\"Field2\":1987}"
 				So(<-flushed, ShouldResemble, expected)
 			})
@@ -48,7 +49,7 @@ func TestIfFunctionIsCalledWhenFlusherFlushes (t *testing.T) {
 				So(err, ShouldBeNil)
 			})
 			Convey("The flushed values should match", func() {
-				expected := make([]string,2)
+				expected := make([]string, 2)
 				expected[0] = "{\"Field1\":\"name1\",\"Field2\":1987}"
 				expected[1] = "{\"Field1\":\"name2\",\"Field2\":1990}"
 				So(<-flushed, ShouldResemble, expected)
