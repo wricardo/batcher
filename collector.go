@@ -37,6 +37,13 @@ func (this CollectedMessages) Strings() []string {
 
 type Collector interface {
 	Collect(Collectable) error
+	Shutdown()
+}
+
+type UnsafeCollector interface {
+	CollectUnsafe(Collectable) error
+	Flush()
+	Shutdown()
 }
 
 type bufferedCollector struct {
