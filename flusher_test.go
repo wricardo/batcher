@@ -2,9 +2,9 @@ package batcher
 
 import (
 	"fmt"
+	. "github.com/smartystreets/goconvey/convey"
 	"testing"
 	"time"
-	. "github.com/smartystreets/goconvey/convey"
 	//    "strconv"
 	//    "fmt"
 	"encoding/json"

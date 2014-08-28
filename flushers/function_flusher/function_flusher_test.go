@@ -3,9 +3,9 @@ package function_flusher
 import (
 	"encoding/json"
 	"fmt"
-	"testing"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/wricardo/batcher"
+	"testing"
 )
 
 func init() {
