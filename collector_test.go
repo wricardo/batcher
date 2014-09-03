@@ -61,9 +61,9 @@ func TestUnsafeSizeBufferedCollector(t *testing.T) {
 			c.Collect(String("c"))
 			c.Collect(String("d"))
 			c.Collect(String("e"))
-
-			ShouldReceiveFlushableStringsIn(mf.flushed, []string{"b", "c"}, time.Millisecond*50)
-			ShouldReceiveFlushableStringsIn(mf.flushed, []string{"d", "e"}, time.Millisecond*50)
+			<-mf.flushed
+			<-mf.flushed
+			So(fmt.Sprint(mf.GetFlushed()), ShouldResemble,"[[b c] [d e]]")
 		})
 	})
 }

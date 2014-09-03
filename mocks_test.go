@@ -3,6 +3,7 @@ package batcher
 import (
 	"encoding/json"
 	"time"
+	"sync"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -29,11 +30,14 @@ func (this *MockFlusherImplementation) Flush(to_flush Flushable) error {
 
 type MockFlusher struct {
 	flushed chan Flushable
+	flushed_slice []Flushable
+	sync.Mutex
 }
 
 func NewMockFlusher() *MockFlusher {
 	mf := new(MockFlusher)
 	mf.flushed = make(chan Flushable)
+	mf.flushed_slice = make([]Flushable, 0)
 	return mf
 }
 
@@ -41,11 +45,24 @@ func (this *MockFlusher) Shutdown() {
 	// panic("shutdown not implemented on the mock")
 }
 func (this *MockFlusher) Flush(to_flush Flushable) error {
+	this.Lock()
+	this.flushed_slice = append(this.flushed_slice, to_flush)
+	this.Unlock()
 	go func() {
 		this.flushed <- to_flush
 	}()
 	return nil
 }
+
+func (this *MockFlusher) GetFlushed() []Flushable {
+	this.Lock()
+		to_return:= make([]Flushable, len(this.flushed_slice))
+		copy(to_return, this.flushed_slice)
+	this.Unlock()
+	return to_return
+}
+
+
 
 func ShouldReceiveStringIn(c chan string, r string, d time.Duration) {
 	select {
