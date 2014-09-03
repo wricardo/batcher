@@ -2,24 +2,8 @@ package batcher
 
 import (
 	"errors"
-	"strconv"
 	"time"
 )
-
-func init() {
-}
-
-type String string
-
-func (this String) String() string {
-	return string(this)
-}
-
-type Int int
-
-func (this Int) String() string {
-	return strconv.Itoa(int(this))
-}
 
 type Collectable interface {
 	String() string
@@ -153,13 +137,9 @@ func (this *bufferedCollector) Collect(i Collectable) (err error) {
 type bufferedCollectorConfiguration struct {
 	bufferSize      int
 	bufferTimeout   time.Duration
-	numberOfWorkers int
 }
 
-func NewBufferedCollectorConfiguration(bufferSize int, bufferTimeout time.Duration, numberOfWorkers int) (*bufferedCollectorConfiguration, error) {
-	if numberOfWorkers <= 0 {
-		return nil, errors.New("Invalid numberOfWorkers")
-	}
+func NewBufferedCollectorConfiguration(bufferSize int, bufferTimeout time.Duration) (*bufferedCollectorConfiguration, error) {
 	if bufferSize <= 0 {
 		return nil, errors.New("Invalid bufferSize")
 	}
@@ -169,6 +149,5 @@ func NewBufferedCollectorConfiguration(bufferSize int, bufferTimeout time.Durati
 	bcc := new(bufferedCollectorConfiguration)
 	bcc.bufferSize = bufferSize
 	bcc.bufferTimeout = bufferTimeout
-	bcc.numberOfWorkers = numberOfWorkers
 	return bcc, nil
 }

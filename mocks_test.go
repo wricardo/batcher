@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/garyburd/redigo/redis"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -109,118 +108,6 @@ func ShouldNotReceiveFlushableIn(c chan Flushable, d time.Duration) {
 	}
 }
 
-type MockRedisPool struct {
-	dos           chan string
-	CommandsDelay time.Duration
-}
-
-func NewMockRedisPool() *MockRedisPool {
-	m := new(MockRedisPool)
-	m.dos = make(chan string, 10)
-	return m
-}
-
-func (this *MockRedisPool) Get() redis.Conn {
-	rc := NewMockRedisConnection(this.dos)
-	if int64(this.CommandsDelay) != 0 {
-		rc.CommandsDelay = this.CommandsDelay
-	}
-	return rc
-}
-
-type MockRedisConnection struct {
-	dos           chan string
-	CommandsDelay time.Duration
-}
-
-func NewMockRedisConnection(dos chan string) *MockRedisConnection {
-	m := new(MockRedisConnection)
-	m.dos = dos
-	return m
-}
-
-func (this *MockRedisConnection) Close() error {
-	return nil
-}
-
-func (this *MockRedisConnection) Err() error {
-	return nil
-}
-
-func (this *MockRedisConnection) Do(commandName string, args ...interface{}) (reply interface{}, err error) {
-	if int64(this.CommandsDelay) != 0 {
-		time.Sleep(this.CommandsDelay)
-	}
-	s := make([]interface{}, len(args)+1)
-	s[0] = commandName
-	for i, v := range args {
-		s[i+1] = v
-	}
-	encoded, _ := json.Marshal(s)
-	this.dos <- string(encoded)
-	return nil, nil
-}
-
-func (this *MockRedisConnection) Send(commandName string, args ...interface{}) error {
-	return nil
-}
-
-func (this *MockRedisConnection) Flush() error {
-	return nil
-}
-
-func (this *MockRedisConnection) Receive() (reply interface{}, err error) {
-	return nil, nil
-}
-
-type MockRedisPoolDiscard struct {
-	dos chan string
-}
-
-func NewMockRedisPoolDiscard() *MockRedisPoolDiscard {
-	m := new(MockRedisPoolDiscard)
-	m.dos = make(chan string, 10)
-	return m
-}
-
-func (this *MockRedisPoolDiscard) Get() redis.Conn {
-	rc := NewMockRedisConnectionDiscard(this.dos)
-	return rc
-}
-
-type MockRedisConnectionDiscard struct {
-	dos chan string
-}
-
-func NewMockRedisConnectionDiscard(dos chan string) *MockRedisConnectionDiscard {
-	m := new(MockRedisConnectionDiscard)
-	m.dos = dos
-	return m
-}
-
-func (this *MockRedisConnectionDiscard) Close() error {
-	return nil
-}
-
-func (this *MockRedisConnectionDiscard) Err() error {
-	return nil
-}
-
-func (this *MockRedisConnectionDiscard) Do(commandName string, args ...interface{}) (reply interface{}, err error) {
-	return nil, nil
-}
-
-func (this *MockRedisConnectionDiscard) Send(commandName string, args ...interface{}) error {
-	return nil
-}
-
-func (this *MockRedisConnectionDiscard) Flush() error {
-	return nil
-}
-
-func (this *MockRedisConnectionDiscard) Receive() (reply interface{}, err error) {
-	return nil, nil
-}
 
 type MockStruct struct {
 	Name string

@@ -6,12 +6,14 @@ import (
 	"strconv"
 	"testing"
 	"time"
+	"runtime"
 )
 
 func TestUnsafeSizeBufferedCollector(t *testing.T) {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	Convey("Given a collector", t, func() {
 		mf := NewMockFlusher()
-		bcc, _ := NewBufferedCollectorConfiguration(2, time.Duration(time.Millisecond*100), 2)
+		bcc, _ := NewBufferedCollectorConfiguration(2, time.Duration(time.Millisecond*100))
 		c := NewBufferedCollector(bcc, mf)
 
 		Convey("When no information is collected", func() {
@@ -67,9 +69,10 @@ func TestUnsafeSizeBufferedCollector(t *testing.T) {
 }
 
 func TestCollectingAStruct(t *testing.T) {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	Convey("Given a collector", t, func() {
 		mf := NewMockFlusher()
-		bcc, _ := NewBufferedCollectorConfiguration(2, time.Duration(time.Millisecond*10), 2)
+		bcc, _ := NewBufferedCollectorConfiguration(2, time.Duration(time.Millisecond*10))
 		c := NewBufferedCollector(bcc, mf)
 
 		Convey("When collect a struct", func() {
@@ -84,9 +87,10 @@ func TestCollectingAStruct(t *testing.T) {
 }
 
 func TestSimpleSizeBufferedCollector(t *testing.T) {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	Convey("Given a collector", t, func() {
 		mf := NewMockFlusher()
-		bcc, _ := NewBufferedCollectorConfiguration(2, time.Duration(time.Millisecond*100), 2)
+		bcc, _ := NewBufferedCollectorConfiguration(2, time.Duration(time.Millisecond*100))
 		c := NewBufferedCollector(bcc, mf)
 
 		Convey("When no information is collected", func() {
@@ -142,9 +146,10 @@ func TestSimpleSizeBufferedCollector(t *testing.T) {
 }
 
 func TestWaitForAllCollectedMessagesToBeFlushed(t *testing.T) {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	Convey("Given a collector", t, func() {
 		mf := NewMockFlusher()
-		bcc, _ := NewBufferedCollectorConfiguration(2, time.Duration(time.Millisecond*100), 2)
+		bcc, _ := NewBufferedCollectorConfiguration(2, time.Duration(time.Millisecond*100))
 		c := NewBufferedCollector(bcc, mf)
 
 		Convey("When collect once", func() {
@@ -168,9 +173,10 @@ func TestWaitForAllCollectedMessagesToBeFlushed(t *testing.T) {
 }
 
 func TestWaitForAllCollectedMessagesToBeFlushed2(t *testing.T) {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	Convey("Given a collector", t, func() {
 		mf := NewMockFlusher()
-		bcc, _ := NewBufferedCollectorConfiguration(2, time.Duration(time.Millisecond*100), 2)
+		bcc, _ := NewBufferedCollectorConfiguration(2, time.Duration(time.Millisecond*100))
 		c := NewBufferedCollector(bcc, mf)
 
 		Convey("When collect once", func() {
@@ -199,12 +205,13 @@ func TestWaitForAllCollectedMessagesToBeFlushed2(t *testing.T) {
 }
 
 func TestStressCollector(t *testing.T) {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	start := 2
 	incr := 100
 	for i := start; i < 1000; i = i + incr {
 		Convey("Given a valid collector with buffer_size="+strconv.Itoa(i), t, func() {
 			mf := NewMockFlusher()
-			bcc, _ := NewBufferedCollectorConfiguration(i, time.Duration(time.Second), 2)
+			bcc, _ := NewBufferedCollectorConfiguration(i, time.Duration(time.Second))
 			c := NewBufferedCollector(bcc, mf)
 
 			Convey("When no information is collected", func() {
@@ -244,36 +251,97 @@ func TestStressCollector(t *testing.T) {
 }
 
 func TestBufferCollectorCreation(t *testing.T) {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	Convey("When constructing a bufferedCollectorConfiguration", t, func() {
 		var flagtests = []struct {
 			test_case       string
 			bufferSize      int
 			bufferTimeout   time.Duration
-			numberOfWorkers int
 			assertBcc       func(interface{}, ...interface{}) string
 			assertError     func(interface{}, ...interface{}) string
 		}{
-			{"Valid parameters", 1, time.Duration(time.Second), 1, ShouldNotBeNil, ShouldBeNil},
-			{"Invalid bufferSize 0", 0, time.Duration(time.Second), 1, ShouldBeNil, ShouldNotBeNil},
-			{"Invalid bufferSize -1", -1, time.Duration(time.Second), 1, ShouldBeNil, ShouldNotBeNil},
-			{"Invalid number of workers", 1, time.Duration(time.Second), 0, ShouldBeNil, ShouldNotBeNil},
-			{"Invalid number of workers", 1, time.Duration(time.Second), -1, ShouldBeNil, ShouldNotBeNil},
-			{"Invalid bufferTimeout", 1, time.Duration(time.Second * 0), 1, ShouldBeNil, ShouldNotBeNil},
-			{"Invalid bufferTimeout", 1, time.Duration(time.Second * -1), 1, ShouldBeNil, ShouldNotBeNil},
+			{"Valid parameters", 1, time.Duration(time.Second), ShouldNotBeNil, ShouldBeNil},
+			{"Invalid bufferSize 0", 0, time.Duration(time.Second), ShouldBeNil, ShouldNotBeNil},
+			{"Invalid bufferSize -1", -1, time.Duration(time.Second),  ShouldBeNil, ShouldNotBeNil},
+			{"Invalid number of workers", 1, time.Duration(time.Second), ShouldBeNil, ShouldNotBeNil},
+			{"Invalid number of workers", 1, time.Duration(time.Second),  ShouldBeNil, ShouldNotBeNil},
+			{"Invalid bufferTimeout", 1, time.Duration(time.Second * 0), ShouldBeNil, ShouldNotBeNil},
+			{"Invalid bufferTimeout", 1, time.Duration(time.Second * -1),  ShouldBeNil, ShouldNotBeNil},
 		}
 
 		for _, s := range flagtests {
 			Convey(s.test_case, func() {
 				bufferSize := s.bufferSize
 				bufferTimeout := s.bufferTimeout
-				numberOfWorkers := s.numberOfWorkers
 
 				Convey("Assertion", func() {
-					bcc, err := NewBufferedCollectorConfiguration(bufferSize, bufferTimeout, numberOfWorkers)
+					bcc, err := NewBufferedCollectorConfiguration(bufferSize, bufferTimeout)
 					So(bcc, s.assertBcc)
 					So(err, s.assertError)
 				})
 			})
 		}
+	})
+}
+
+func TestCollectedMessagesStrings(t *testing.T) {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	Convey("Calling Strings on CollectedMessages should return a []string", t, func() {
+		cm := make(CollectedMessages,2)
+		cm[0] = String("string1")
+		cm[1] = String("string2")
+		s := make([]string,2)
+		s[0] = "string1"
+		s[1] = "string2"
+		So(cm.Strings(), ShouldResemble, s)
+	})
+}
+
+func TestCollectOnAShutdownCollector(t *testing.T) {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	Convey("Given a collector", t, func() {
+		mf := NewMockFlusher()
+		bcc, _ := NewBufferedCollectorConfiguration(2, time.Duration(time.Millisecond*100))
+		c := NewBufferedCollector(bcc, mf)
+		c.Shutdown()
+		Convey("Calling Collect should return error",  func() {
+			err := c.Collect(String("test"))
+			So(err, ShouldNotBeNil)
+		})
+
+	})
+}
+
+func TestCollectOnACollectorWithoutAFlusher(t *testing.T) {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	Convey("Given a collector without a flusher", t, func() {
+		bcc, _ := NewBufferedCollectorConfiguration(2, time.Duration(time.Millisecond*100))
+		c := NewBufferedCollector(bcc, nil)
+		Convey("Calling Collect should return error",  func() {
+			err := c.Collect(String("test"))
+			So(err, ShouldNotBeNil)
+		})
+	})
+}
+
+func TestCreatingABufferedCollectorConfiguration(t *testing.T) {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	Convey("When calling NewBufferedCollectorConfiguration", t, func() {
+
+		Convey("with invalid bufferSize",  func() {
+			bcc, err := NewBufferedCollectorConfiguration(0, time.Duration(time.Millisecond*100))
+			So(err, ShouldNotBeNil)
+			So(bcc, ShouldBeNil)
+
+			bcc, err = NewBufferedCollectorConfiguration(-1, time.Duration(time.Millisecond*100))
+			So(err, ShouldNotBeNil)
+			So(bcc, ShouldBeNil)
+		})
+
+		Convey("with invalid bufferTimeout",  func() {
+			bcc, err := NewBufferedCollectorConfiguration(10, time.Duration(time.Millisecond * 0))
+			So(err, ShouldNotBeNil)
+			So(bcc, ShouldBeNil)
+		})
 	})
 }
