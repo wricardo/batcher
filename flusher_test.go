@@ -16,7 +16,7 @@ func init() {
 
 func TestShuttingDownFlusherWaitsForAllTheCommandsToBeFinished(t *testing.T) {
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	SkipConvey("Given a flusher with buffer 3", t, func() {
+	Convey("Given a flusher with buffer 3", t, func() {
 		mfi := NewMockFlusherImplementation()
 		mfi.delay = time.Second * 1
 		flusher := NewDefaultFlusher(3, mfi)

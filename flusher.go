@@ -88,7 +88,7 @@ func (this *DefaultFlusher) Flush(to_flush Flushable) (err error) {
 
 	select {
 	case this.flush_chan <- to_flush:
-	case <-time.After(time.Second):
+	case <-time.After(time.Second * 10):
 		err = errors.New("Timeout on send")
 	}
 
