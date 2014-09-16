@@ -135,8 +135,8 @@ func (this *bufferedCollector) Collect(i Collectable) (err error) {
 }
 
 type bufferedCollectorConfiguration struct {
-	bufferSize      int
-	bufferTimeout   time.Duration
+	bufferSize    int
+	bufferTimeout time.Duration
 }
 
 func NewBufferedCollectorConfiguration(bufferSize int, bufferTimeout time.Duration) (*bufferedCollectorConfiguration, error) {

@@ -32,12 +32,14 @@ type MockFlusher struct {
 	flushed chan Flushable
 	flushed_slice []Flushable
 	sync.Mutex
+	devnull bool
 }
 
 func NewMockFlusher() *MockFlusher {
 	mf := new(MockFlusher)
 	mf.flushed = make(chan Flushable)
 	mf.flushed_slice = make([]Flushable, 0)
+	mf.devnull = false
 	return mf
 }
 
@@ -45,6 +47,9 @@ func (this *MockFlusher) Shutdown() {
 	// panic("shutdown not implemented on the mock")
 }
 func (this *MockFlusher) Flush(to_flush Flushable) error {
+	if this.devnull == true {
+		return nil
+	}
 	this.Lock()
 	this.flushed_slice = append(this.flushed_slice, to_flush)
 	this.Unlock()

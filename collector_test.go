@@ -345,3 +345,14 @@ func TestCreatingABufferedCollectorConfiguration(t *testing.T) {
 		})
 	})
 }
+
+func BenchmarkCollect(b *testing.B) {
+		mf := NewMockFlusher()
+		mf.devnull = true
+		bcc, _ := NewBufferedCollectorConfiguration(2000, time.Duration(time.Millisecond*100))
+		c := NewBufferedCollector(bcc, mf)
+		for i := 0; i <= b.N; i++ {
+			c.Collect(String("Some String"))
+		}
+		c.Shutdown()
+}
