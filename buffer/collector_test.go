@@ -68,6 +68,24 @@ func TestUnsafeSizeBufferedCollector(t *testing.T) {
 	})
 }
 
+func TestCollectingString(t *testing.T) {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	Convey("Given a collector", t, func() {
+		mf := NewMockFlusher()
+		bcc, _ := NewBufferedCollectorConfiguration(2, time.Duration(time.Millisecond*10))
+		c := NewBufferedCollector(bcc, mf)
+
+		Convey("When collect a struct", func() {
+			c.CollectString("somevalue")
+
+			Convey("The flusher should have been called within 30 milliseconds", func() {
+				ShouldReceiveFlushableStringsIn(mf.flushed, []string{"somevalue"}, time.Millisecond*30)
+			})
+		})
+
+	})
+}
+
 func TestCollectingAStruct(t *testing.T) {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	Convey("Given a collector", t, func() {

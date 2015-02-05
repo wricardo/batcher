@@ -26,6 +26,7 @@ func (this CollectedMessages) Strings() []string {
 
 type Collector interface {
 	Collect(Collectable) error
+	CollectString(string) error
 	Shutdown()
 }
 
@@ -118,6 +119,10 @@ func (this *BufferedCollector) CollectUnsafe(r Collectable) {
 	if this.i >= this.bcc.bufferSize {
 		this.Flush()
 	}
+}
+
+func (this *BufferedCollector) CollectString(s string) (err error) {
+	return this.Collect(String(s))
 }
 
 func (this *BufferedCollector) Collect(i Collectable) (err error) {
