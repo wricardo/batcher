@@ -2,12 +2,12 @@ package redis_flusher
 
 import (
 	"github.com/garyburd/redigo/redis"
-	"github.com/wricardo/batcher"
+	"github.com/wricardo/batcher/buffer"
 	//	"errors"
 )
 
 type RedisFlusherImplementation interface {
-	Flush(redis.Conn, batcher.Flushable)
+	Flush(redis.Conn, buffer.Flushable)
 }
 
 type RedisFlusher struct {
@@ -22,7 +22,7 @@ func NewRedisFlusher(redis_pool RedisPool, implementation RedisFlusherImplementa
 	return rf
 }
 
-func (this *RedisFlusher) Flush(to_flush batcher.Flushable) (err error) {
+func (this *RedisFlusher) Flush(to_flush buffer.Flushable) (err error) {
 	conn := this.redis_pool.Get()
 	this.implementation.Flush(conn, to_flush)
 	return err

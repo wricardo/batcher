@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/wricardo/batcher"
+	"github.com/wricardo/batcher/buffer"
 	"github.com/wricardo/batcher/flushers/function_flusher"
 )
 
@@ -21,7 +22,7 @@ func main() {
 
 type Logger struct {
 	filename  string
-	collector batcher.Collector
+	collector buffer.Collector
 }
 
 func NewLogger(filename string) *Logger {
@@ -32,10 +33,10 @@ func NewLogger(filename string) *Logger {
 }
 
 func (this *Logger) Log(text string) {
-	this.collector.Collect(batcher.String(text))
+	this.collector.Collect(buffer.String(text))
 }
 
-func (this *Logger) Flush(to_flush batcher.Flushable) error {
+func (this *Logger) Flush(to_flush buffer.Flushable) error {
 	if _, err := os.Stat(this.filename); os.IsNotExist(err) {
 		os.Create(this.filename)
 	}
@@ -53,7 +54,5 @@ func (this *Logger) Flush(to_flush batcher.Flushable) error {
 }
 
 func createColletor(flush_func function_flusher.FlushFunction) batcher.Collector {
-	f := function_flusher.NewFunctionFlusher(buffer_size, flush_func)
-	bcc, _ := batcher.NewBufferedCollectorConfiguration(buffer_size, buffer_timeout)
-	return batcher.NewBufferedCollector(bcc, f)
+	return batcher.NewFunction(flush_func, buffer_size, time.Second)
 }

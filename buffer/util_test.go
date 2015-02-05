@@ -1,4 +1,4 @@
-package batcher
+package buffer
 
 import (
 	. "github.com/smartystreets/goconvey/convey"

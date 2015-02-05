@@ -1,9 +1,14 @@
-package batcher
+package buffer
 
 import (
 	"errors"
 	"time"
 )
+
+var DefaultCollectorConfiguration *bufferedCollectorConfiguration =  &bufferedCollectorConfiguration {
+	bufferSize: 100,
+	bufferTimeout: time.Second,
+}
 
 type Collectable interface {
 	String() string
@@ -30,8 +35,8 @@ type UnsafeCollector interface {
 	Shutdown()
 }
 
-type bufferedCollector struct {
-	Flusher      Flusher
+type BufferedCollector struct {
+	flusher      Flusher
 	chan_receive chan Collectable
 	shutdown     chan chan bool
 	buffer       CollectedMessages
@@ -39,9 +44,9 @@ type bufferedCollector struct {
 	bcc          *bufferedCollectorConfiguration
 }
 
-func NewBufferedCollector(bcc *bufferedCollectorConfiguration, flusher Flusher) *bufferedCollector {
-	bc := new(bufferedCollector)
-	bc.Flusher = flusher
+func NewBufferedCollector(bcc *bufferedCollectorConfiguration, flusher Flusher) *BufferedCollector {
+	bc := new(BufferedCollector)
+	bc.flusher = flusher
 	bc.chan_receive = make(chan Collectable, bcc.bufferSize)
 	bc.shutdown = make(chan chan bool, 0)
 	bc.buffer = make(CollectedMessages, bcc.bufferSize)
@@ -51,27 +56,27 @@ func NewBufferedCollector(bcc *bufferedCollectorConfiguration, flusher Flusher) 
 	return bc
 }
 
-func (this *bufferedCollector) Shutdown() {
+func (this *BufferedCollector) Shutdown() {
 	finished := make(chan bool, 0)
 	this.shutdown <- finished
 	<-finished
 }
 
-func (this *bufferedCollector) Flush() {
+func (this *BufferedCollector) Flush() {
 	if this.i > 0 {
 		to_flush := make(Flushable, this.i)
 		copy(to_flush, this.buffer[:this.i])
 		this.i = 0
-		this.Flusher.Flush(to_flush)
+		this.flusher.Flush(to_flush)
 	}
 }
 
-func (this *bufferedCollector) receive() {
+func (this *BufferedCollector) receive() {
 	var ever_received bool = false
 	var shutdown chan bool
 	shutdown_func := func() {
 		close(this.chan_receive)
-		this.Flusher.Shutdown()
+		this.flusher.Shutdown()
 		shutdown <- true
 	}
 
@@ -107,7 +112,7 @@ L:
 	}
 }
 
-func (this *bufferedCollector) CollectUnsafe(r Collectable) {
+func (this *BufferedCollector) CollectUnsafe(r Collectable) {
 	this.buffer[this.i] = r
 	this.i = this.i + 1
 	if this.i >= this.bcc.bufferSize {
@@ -115,13 +120,13 @@ func (this *bufferedCollector) CollectUnsafe(r Collectable) {
 	}
 }
 
-func (this *bufferedCollector) Collect(i Collectable) (err error) {
+func (this *BufferedCollector) Collect(i Collectable) (err error) {
 	defer func() {
 		if e := recover(); e != nil {
 			err = errors.New("This flusher is shut down")
 		}
 	}()
-	if this.Flusher == nil {
+	if this.flusher == nil {
 		err = errors.New("Invalid Flusher")
 		return
 	}

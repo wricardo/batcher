@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	. "github.com/smartystreets/goconvey/convey"
-	"github.com/wricardo/batcher"
+	"github.com/wricardo/batcher/buffer"
 	"testing"
 )
 
@@ -15,16 +15,16 @@ func init() {
 func TestIfFunctionIsCalledWhenFlusherFlushes(t *testing.T) {
 	Convey("Given a function flusher", t, func() {
 		flushed := make(chan []string, 0)
-		f := func(to_flush batcher.Flushable) error {
+		f := func(to_flush buffer.Flushable) error {
 			flushed <- to_flush.Strings()
 			return nil
 		}
 
 		ff := NewFunctionFlusher(0, f)
-		flusher := batcher.NewDefaultFlusher(3, ff)
+		flusher := buffer.NewDefaultFlusher(3, ff)
 
 		Convey("When Flushing one flushable struct", func() {
-			to_flush := make(batcher.Flushable, 1)
+			to_flush := make(buffer.Flushable, 1)
 			to_flush[0] = TestStruct{"name1", 1987}
 			err := flusher.Flush(to_flush)
 
@@ -39,7 +39,7 @@ func TestIfFunctionIsCalledWhenFlusherFlushes(t *testing.T) {
 		})
 
 		Convey("When flushing a flushable slice of structs", func() {
-			to_flush := make(batcher.Flushable, 2)
+			to_flush := make(buffer.Flushable, 2)
 			to_flush[0] = TestStruct{"name1", 1987}
 			to_flush[1] = TestStruct{"name2", 1990}
 

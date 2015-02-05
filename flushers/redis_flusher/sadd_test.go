@@ -16,13 +16,13 @@ func init() {
 }
 
 
-func TestRpushFlusherSendsTheCorrectCommandToRedis(t *testing.T) {
+func TestSAddFlusherSendsTheCorrectCommandToRedis(t *testing.T) {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	Convey("Given a Mock Redis Pool", t, func() {
 		pool := mock.NewMockRedisPool()
 
-		Convey("Given RPushFlusher", func() {
-			rpf := NewRPushFlusher("fake_list", 10, pool)
+		Convey("Given SAddFlusher", func() {
+			rpf := NewSAddFlusher("fake_set", 10, pool)
 
 			Convey("Flushing one struct", func() {
 				to_flush := make(buffer.Flushable, 1)
@@ -30,7 +30,7 @@ func TestRpushFlusherSendsTheCorrectCommandToRedis(t *testing.T) {
 				err := rpf.Flush(to_flush)
 				So(err, ShouldBeNil)
 				tmp := <-pool.Dos
-				So(tmp, ShouldEqual,"[\"RPUSH\",\"fake_list\",\"{\\\"Field1\\\":\\\"name1\\\",\\\"Field2\\\":1987}\"]")
+				So(tmp, ShouldEqual,"[\"SADD\",\"fake_set\",\"{\\\"Field1\\\":\\\"name1\\\",\\\"Field2\\\":1987}\"]")
 			})
 
 			Convey("Flushing two structs", func() {
@@ -40,7 +40,7 @@ func TestRpushFlusherSendsTheCorrectCommandToRedis(t *testing.T) {
 				err := rpf.Flush(to_flush)
 				So(err, ShouldBeNil)
 				tmp := <-pool.Dos
-				So(tmp, ShouldEqual,"[\"RPUSH\",\"fake_list\",\"{\\\"Field1\\\":\\\"name1\\\",\\\"Field2\\\":1987}\",\"{\\\"Field1\\\":\\\"name2\\\",\\\"Field2\\\":1988}\"]")
+				So(tmp, ShouldEqual,"[\"SADD\",\"fake_set\",\"{\\\"Field1\\\":\\\"name1\\\",\\\"Field2\\\":1987}\",\"{\\\"Field1\\\":\\\"name2\\\",\\\"Field2\\\":1988}\"]")
 			})
 		})
 	})
