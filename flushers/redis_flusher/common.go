@@ -12,8 +12,5 @@ func Batch(conn redis.Conn, redis_command string, redis_key string, f buffer.Flu
 	for k, v := range strings {
 		commands[k+1] = v
 	}
-	_, err := conn.Do(redis_command, commands...)
-	if err != nil {
-		panic(err)
-	}
+	conn.Do(redis_command, commands...)
 }
