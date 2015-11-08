@@ -282,7 +282,6 @@ func TestBufferCollectorCreation(t *testing.T) {
 			{"Invalid bufferSize 0", 0, time.Duration(time.Second), ShouldBeNil, ShouldNotBeNil},
 			{"Invalid bufferSize -1", -1, time.Duration(time.Second),  ShouldBeNil, ShouldNotBeNil},
 			{"Invalid number of workers", 1, time.Duration(time.Second), ShouldBeNil, ShouldNotBeNil},
-			{"Invalid number of workers", 1, time.Duration(time.Second),  ShouldBeNil, ShouldNotBeNil},
 			{"Invalid bufferTimeout", 1, time.Duration(time.Second * 0), ShouldBeNil, ShouldNotBeNil},
 			{"Invalid bufferTimeout", 1, time.Duration(time.Second * -1),  ShouldBeNil, ShouldNotBeNil},
 		}
